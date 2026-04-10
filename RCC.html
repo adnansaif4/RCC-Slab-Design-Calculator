@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCC Slab Design Calculator – IS 456:2000</title>
+    <!-- External CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div style="background:#0066cc;color:white;width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;">📐</div>
+                <div>
+                    <span class="logo-text">RCC Slab Designer</span>
+                    <div class="college">IS 456:2000 • Bharati Vidyapeeth College of Engineering, Pune</div>
+                </div>
+            </div>
+            
+            <div class="team-info">
+                <span style="color:#0066cc;">👷‍♂️ Team:</span>
+                Adnan Shaikh (40), Sameer Ahmad Pala (42), 
+                Jay Deshmukh (43), Aijaz Ahmad (24)
+                <span style="color:#00b386;">• Guided by Dr. Pradeep B. Kodag</span>
+            </div>
+            
+            <div style="display:flex;gap:12px;align-items:center;">
+                <button onclick="loadSampleData()" class="btn btn-secondary" style="font-size:0.95rem;padding:8px 18px;">
+                    📋 Load Sample Data
+                </button>
+                <div style="font-size:0.8rem;background:#ecfdf5;color:#10b981;padding:4px 12px;border-radius:9999px;font-weight:600;">
+                    LIVE • Two-Way Slab Calculator
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <span>📋 Design Steps (IS 456:2000)</span>
+                <button onclick="toggleSidebar()" style="background:none;border:none;color:white;font-size:1.5rem;cursor:pointer;">↔</button>
+            </div>
+            <div class="steps-list" id="steps-list"></div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="content">
+            
+            <!-- INPUT PANEL -->
+            <div class="panel" id="input-panel">
+                <div class="panel-header">
+                    <div class="panel-title">🛠 Input Parameters</div>
+                    <span style="font-size:0.85rem;background:#e0f0ff;color:#0066cc;padding:4px 12px;border-radius:9999px;">All units in SI (IS 456 compliant)</span>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Short Span (Lx) <span style="color:#0066cc;">*</span></label>
+                        <input type="text" id="lx" value="3.5" placeholder="e.g. 3.5 or 11'6&quot;">
+                        <div class="input-hint">in meters (ft-in auto converted)</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Long Span (Ly) <span style="color:#0066cc;">*</span></label>
+                        <input type="text" id="ly" value="4.5" placeholder="e.g. 4.5 or 14'9&quot;">
+                        <div class="input-hint">in meters (ft-in auto converted)</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Concrete Grade (fck)</label>
+                        <select id="fck">
+                            <option value="20">M20 (20 N/mm²)</option>
+                            <option value="25" selected>M25 (25 N/mm²)</option>
+                            <option value="30">M30 (30 N/mm²)</option>
+                            <option value="35">M35 (35 N/mm²)</option>
+                            <option value="40">M40 (40 N/mm²)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Steel Grade (fy)</label>
+                        <select id="fy">
+                            <option value="415" selected>Fe415 (415 N/mm²)</option>
+                            <option value="500">Fe500 (500 N/mm²)</option>
+                            <option value="550">Fe550 (550 N/mm²)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Unit Weight of RCC (kN/m³)</label>
+                        <input type="number" id="unit-weight" value="25" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Floor Finish Load (kN/m²)</label>
+                        <input type="number" id="ff-load" value="1.0" step="0.1">
+                    </div>
+                    <div class="form-group">
+                        <label>Live Load (kN/m²)</label>
+                        <input type="number" id="ll-load" value="3.0" step="0.1">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Slab Thickness D (mm)</label>
+                        <input type="number" id="thickness" value="150" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Clear Cover (mm)</label>
+                        <input type="number" id="clear-cover" value="20" step="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Bar Diameter φ (mm)</label>
+                        <select id="bar-dia">
+                            <option value="8" selected>8 mm</option>
+                            <option value="10">10 mm</option>
+                            <option value="12">12 mm</option>
+                            <option value="16">16 mm</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>α<sub>x</sub> (Short span coeff.)</label>
+                        <input type="number" id="alpha-x" value="0.062" step="0.001">
+                        <div class="input-hint">From IS 456 Table 26</div>
+                    </div>
+                    <div class="form-group">
+                        <label>α<sub>y</sub> (Long span coeff.)</label>
+                        <input type="number" id="alpha-y" value="0.035" step="0.001">
+                        <div class="input-hint">From IS 456 Table 26</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Lever Arm Factor (j)</label>
+                        <input type="number" id="j-factor" value="0.90" step="0.01" min="0.8" max="0.95">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Support Condition (for reference)</label>
+                        <select id="support-type" onchange="suggestCoefficients()">
+                            <option value="1">Simply supported (4 sides)</option>
+                            <option value="2" selected>Restrained – Interior panel</option>
+                            <option value="3">One short edge discontinuous</option>
+                            <option value="4">Two adjacent edges discontinuous</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button onclick="calculateSlab()" class="btn btn-primary">
+                        🚀 Calculate Design
+                    </button>
+                    <button onclick="resetForm()" class="btn btn-secondary">
+                        🔄 Reset All
+                    </button>
+                    <button onclick="suggestCoefficients()" class="btn btn-outline">
+                        📐 Auto αx &amp; αy
+                    </button>
+                </div>
+                
+                <div id="input-warning" style="margin-top:1rem;font-size:0.85rem;color:#d97706;display:none;">
+                    ⚠️ Please check unrealistic values (e.g. span &gt; 8 m, thickness &lt; 100 mm)
+                </div>
+            </div>
+            
+            <!-- OUTPUT PANEL -->
+            <div class="panel output-panel" id="output-panel">
+                <div class="result-header">
+                    <div>
+                        <div class="result-title">✅ Design Results</div>
+                        <div id="slab-type-display" style="font-size:1.1rem;font-weight:600;color:#10b981;"></div>
+                    </div>
+                    <div style="display:flex;gap:12px;">
+                        <button onclick="copyResults()" class="btn btn-secondary" style="padding:10px 20px;font-size:0.95rem;">
+                            📋 Copy Report
+                        </button>
+                        <button onclick="window.print()" class="btn btn-secondary" style="padding:10px 20px;font-size:0.95rem;">
+                            🖨️ Print Report
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="status-grid" id="status-grid"></div>
+                
+                <div class="result-section">
+                    <h3>📐 Step 2: Effective Depth</h3>
+                    <div class="result-row">
+                        <span>Effective depth d</span>
+                        <span id="d-value" style="font-weight:600;"></span>
+                    </div>
+                    <div class="formula">d = D − clear cover − (φ / 2)</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📦 Step 3: Load Calculations</h3>
+                    <div class="result-row"><span>Self-weight</span><span id="self-weight"></span></div>
+                    <div class="result-row"><span>Total service load (w)</span><span id="service-load"></span></div>
+                    <div class="result-row"><span>Factored load (w<sub>u</sub>)</span><span id="factored-load"></span></div>
+                    <div class="formula">w = (D/1000) × 25 + FF + LL<br>w<sub>u</sub> = 1.5 × w</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📐 Step 4: Bending Moments (IS 456 Table 26)</h3>
+                    <div class="result-row"><span>M<sub>x</sub> (short span)</span><span id="mx-value" style="font-weight:600;"></span></div>
+                    <div class="result-row"><span>M<sub>y</sub> (long span)</span><span id="my-value" style="font-weight:600;"></span></div>
+                    <div class="formula">M<sub>x</sub> = α<sub>x</sub> × w<sub>u</sub> × Lx²<br>M<sub>y</sub> = α<sub>y</sub> × w<sub>u</sub> × Lx²</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📏 Step 5: Depth Check</h3>
+                    <div class="result-row"><span>Required d (mm)</span><span id="d-req-value"></span></div>
+                    <div id="depth-status" class="status-card" style="margin-top:12px;"></div>
+                    <div class="formula">d<sub>req</sub> = √(M<sub>u</sub> / (0.138 × fck × 1000)) × 10³ (approx. for Fe415)</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>🛠 Step 6: Steel Reinforcement</h3>
+                    <div id="steel-results"></div>
+                    <div class="formula">A<sub>st</sub> = M<sub>u</sub> / (0.87 × f<sub>y</sub> × j × d)<br>A<sub>st,min</sub> = 0.12% × b × D</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>📉 Step 7: Deflection Check</h3>
+                    <div id="deflection-result" class="status-card"></div>
+                    <div class="formula">Actual L/d = Lx × 1000 / d<br>Basic allowable = 20 (simply supported) × modification factor</div>
+                </div>
+                
+                <div class="result-section">
+                    <h3>⚖️ Step 8: Shear Check</h3>
+                    <div id="shear-result" class="status-card"></div>
+                    <div class="formula">τ<sub>v</sub> = V<sub>u</sub> / d<br>V<sub>u</sub> = w<sub>u</sub> × Lx / 2</div>
+                </div>
+                
+                <div style="margin-top:auto;padding-top:1rem;font-size:0.8rem;color:#64748b;text-align:center;">
+                    All calculations follow IS 456:2000 (Limit State Method) • Values rounded for practical use
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- STEP MODAL -->
+    <div class="modal" id="step-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div id="modal-title" style="font-size:1.3rem;font-weight:600;"></div>
+                <button onclick="closeModal()" style="background:none;border:none;color:white;font-size:2rem;line-height:1;cursor:pointer;">×</button>
+            </div>
+            <div class="modal-body" id="modal-body"></div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="footer-content">
+            <div>
+                <strong>RCC Slab Design Calculator – IS 456:2000</strong><br>
+                College Project • Bharati Vidyapeeth College of Engineering, Pune
+            </div>
+            <div style="opacity:0.7;">
+                Team: Adnan Shaikh (40) • Sameer Ahmad Pala (42) • Jay Deshmukh (43) • Aijaz Ahmad (24)<br>
+                Guided by: Dr. Pradeep B. Kodag
+            </div>
+            <div style="font-size:0.75rem;opacity:0.6;">
+                Separate HTML + CSS + JS • Fully responsive • Pure JavaScript
+            </div>
+        </div>
+    </footer>
+
+    <!-- External JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
